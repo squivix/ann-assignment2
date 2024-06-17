@@ -29,6 +29,7 @@ def mlp_train(model, data, train_loader, learning_rate=0.001, max_epochs=1000):
         train_losses.append(batch_train_losses.mean())
         train_accuracies.append(batch_train_accuracy.mean())
 
+        model.eval()
         with torch.no_grad():
             test_logits = model.forward(data["x_test"])
             test_loss = loss_function.forward(test_logits, data["y_test"])
@@ -36,5 +37,6 @@ def mlp_train(model, data, train_loader, learning_rate=0.001, max_epochs=1000):
             accuracy = torch.mean((test_preds == data["y_test"]).float())
             test_losses.append(test_loss.item())
             test_accuracies.append(accuracy.item())
+        model.train()
 
     return model, train_losses, train_accuracies, test_losses, test_accuracies

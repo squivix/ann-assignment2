@@ -6,11 +6,15 @@ class MlpModel1(nn.Module):
         super().__init__(*args, **kwargs)
         self.model = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(input_dim_w * input_dim_h, 30),
+            nn.Linear(input_dim_w * input_dim_h, 200),
             nn.ReLU(),
-            nn.Linear(30, 30),
+            nn.Linear(200, 100),
             nn.ReLU(),
-            nn.Linear(30, output_dim),
+            nn.Linear(100, 50),
+            nn.ReLU(),
+            nn.Linear(50, 25),
+            nn.ReLU(),
+            nn.Linear(25, output_dim),
         )
 
     def forward(self, x):
