@@ -4,13 +4,14 @@ from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 
 
-def mlp_train(model, data, train_loader, learning_rate=0.001, max_epochs=1000):
+def mlp_train(model, train_loader, test_dataset, learning_rate=0.001, max_epochs=1000):
     loss_function = CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=learning_rate)
     train_losses = []
     test_losses = []
     train_accuracies = []
     test_accuracies = []
+    x_test, y_test = test_dataset.data, test_dataset.targets
     for epoch in range(max_epochs):
         batches = iter(train_loader)
         batch_train_losses = np.empty(len(batches))
@@ -31,12 +32,15 @@ def mlp_train(model, data, train_loader, learning_rate=0.001, max_epochs=1000):
 
         model.eval()
         with torch.no_grad():
-            test_logits = model.forward(data["x_test"])
-            test_loss = loss_function.forward(test_logits, data["y_test"])
+            test_logits = model.forward(x_test)
+            test_loss = loss_function.forward(test_logits, y_test)
             test_preds = torch.max(torch.softmax(test_logits, 1), dim=1)[1]
-            accuracy = torch.mean((test_preds == data["y_test"]).float())
+            accuracy = torch.mean((test_preds == y_test).float())
             test_losses.append(test_loss.item())
             test_accuracies.append(accuracy.item())
         model.train()
 
-    return model, train_losses, train_accuracies, test_losses, test_accuracies
+    return model, {"train_losses": train_losses,
+                   "train_accuracies": train_accuracies,
+                   "test_losses": test_losses,
+                   "test_accuracies": test_accuracies}
