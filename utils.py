@@ -24,9 +24,8 @@ def mlp_apply(model, test_indexes, test_dataset):
     with torch.no_grad():
         test_logits = model.forward(examples)
         predicted_labels = torch.max(torch.softmax(test_logits, 1), dim=1)[1]
-        accuracy = torch.mean((predicted_labels == true_labels).float())
-
-    print(f"Accuracy on the {len(examples)} examples: {accuracy.item()}")
+        correct_count = torch.sum((predicted_labels == true_labels).long())
+        print(f"Accuracy on the {len(examples)} examples: {correct_count}/{len(examples)}")
 
     plot_grid_size = int(math.ceil(math.sqrt(len(examples))))
     fig, axes = plt.subplots(plot_grid_size, plot_grid_size, figsize=(10, 10))
